@@ -45,8 +45,8 @@ The application follows a structured evaluation process:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/fastapi-imgstory.git
-   cd fastapi-imgstory
+   git clone https://github.com/Natthaphatpiw/claim-agentic-AI.git
+   
    ```
 
 2. Install the required dependencies:
@@ -56,10 +56,16 @@ The application follows a structured evaluation process:
 
 3. Create a `.env` file in the project root with your OpenAI API key:
    ```
-   OPENAI_API_KEY=your_openai_api_key
-   # OPENAI_ORG_ID=your_org_id  # Optional: Uncomment if using organization ID
+   AZURE_OPENAI_API_KEY=""
+   AZURE_OPENAI_ENDPOINT=""
+   VISION_MODEL = "gpt-4.1"
+   DATE_EXTRACTION_MODEL = "gpt-4.1"
+   FALLBACK_VISION_MODEL = "gpt-4o"
+   # AZURE_OPENAI_API_VERSION = "2024-12-01-preview" #for gpt-4o
+   AZURE_OPENAI_API_VERSION = "2025-03-01-preview" #for gpt-4.1
+   
    ```
-   **Note:** The `.env` file is required. The application will not start without a valid `OPENAI_API_KEY`.
+   **Note:** The `.env` file is required. The application will not start without a valid `AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT`.
 
 ## Usage
 
@@ -127,46 +133,47 @@ The application evaluates bottles using a comprehensive set of characteristics i
 - Multiple sharp edges and dangerous fragments
 - Severe compromise of bottle integrity
 
-The final determination includes both a percentage score and a binary claim/unclaim decision.
+## วิธีใช้งานแอปพลิเคชัน (ภาษาไทย)
+แอปพลิเคชันนี้ถูกออกแบบมาเพื่อช่วยให้ผู้ใช้สามารถประเมินขวดเบียร์ช้างว่าเข้าเกณฑ์สำหรับการเคลมหรือไม่ โดยใช้ AI วิเคราะห์จากภาพที่ผู้ใช้อัปโหลด
 
-## Project Structure
+🔄 ขั้นตอนการใช้งาน
+เตรียมไฟล์รูปภาพหรือวิดีโอของขวดเบียร์ช้างที่ต้องการประเมิน
 
-```
-fastapi-imgstory/
-├── .env                  # Environment variables
-├── main.py               # FastAPI application entry point
-├── requirements.txt      # Python dependencies
-├── restart-server.ps1    # Server restart script for Windows
-├── TASKS.md              # Project tasks and progress tracking
-├── static/               # Static files (HTML, CSS, JavaScript, locales)
-│   ├── index.html        # Web interface
-│   ├── script.js         # Frontend JavaScript
-│   ├── style.css         # CSS styles
-│   ├── docs.html         # Documentation page
-│   ├── manual.html       # User manual
-│   └── locales/          # Localization files (e.g., en.json, th.json)
-├── uploads/              # Temporary upload storage
-├── utils/                # Utility modules
-│   ├── __init__.py
-│   ├── media_analysis.py # Media analysis logic
-│   ├── media_processing.py # Image processing
-│   ├── media_validation.py # File validation
-│   ├── openai_client.py  # OpenAI API client
-│   ├── prompts.py        # Assessment criteria and prompt templates
-│   ├── story_generation.py # Assessment generation functions
-│   └── video_processing.py # Video processing
-└── attached_assets/      # (Optional) Additional assets
-```
+แบ่งเป็น 2 ประเภทของภาพที่ต้องอัปโหลด:
 
-## Upcoming Improvements
+(1) รูปขวดเบียร์ที่แสดงฉลากพร้อมวันที่ผลิตอย่างชัดเจน
 
-- Enhanced video processing with multiple frame analysis
-- Integration of machine learning for preliminary damage assessment
-- Performance optimizations and response caching
-- Support for additional bottle brands and types
-- Advanced reporting with visual annotations identifying damage points
-- Batch processing for multiple bottles
+จำนวน: อย่างน้อย 1 รูป (แนะนำ 1–3 รูป)
 
----
+รูปควรเห็น วันเดือนปีที่ผลิต ชัดเจนบริเวณฉลากบนขวด
 
-**Note:** This project does not currently include a LICENSE file. If you intend to open source or distribute this project, please add an appropriate license. 
+(2) รูปหรือวิดีโอความเสียหายของขวดเบียร์
+
+ใช้สำหรับประเมินว่าความเสียหายนั้นเข้าเกณฑ์การเคลมหรือไม่
+
+รองรับหลายรูป หรือวิดีโอความยาวไม่เกิน 10MB
+
+เข้าสู่หน้าเว็บและอัปโหลดไฟล์
+
+เปิดเบราว์เซอร์และไปที่ http://localhost:8000
+
+เลือกอัปโหลดไฟล์ทั้ง 2 ประเภทตามที่ระบุไว้
+
+กดปุ่ม “ประเมิน” เพื่อเริ่มการวิเคราะห์ด้วย AI
+
+รับผลลัพธ์การประเมิน
+
+ระบบจะแสดงผลลัพธ์ 2 ส่วน:
+
+✅ การตรวจสอบวันผลิต: ขวดผลิตมาแล้ว ไม่เกิน 120 วัน หรือไม่
+
+✅ การประเมินความเสียหาย: ขวดเสียหาย ผ่านเกณฑ์การเคลม หรือไม่
+
+ผลลัพธ์จะมีทั้งภาษาไทยและภาษาอังกฤษ
+
+🛑 หมายเหตุ
+ไฟล์ที่รองรับ: .jpg, .png, .mp4
+
+ขนาดไฟล์: ภาพไม่เกิน 10MB, วิดีโอไม่เกิน 50MB
+
+เฉพาะขวดแบรนด์ ช้าง (Chang) เท่านั้น หากตรวจพบว่าไม่ใช่จะถูกปฏิเสธโดยอัตโนมัติ
